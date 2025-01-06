@@ -1,0 +1,49 @@
+# Dependências do Node.js
+node_modules/
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Diretórios do sistema
+.DS_Store
+Thumbs.db
+
+# Configurações do ambiente local
+.env.local
+.env.*.local
+
+# Configurações de IDEs/editors
+.idea/
+.vscode/
+*.swp
+
+# Cache do pacote
+.pnpm-debug.log*
+.parcel-cache/
+.next/
+.cache/
+out/
+dist/
+build/
+
+# Teste de cobertura
+coverage/
+
+# Arquivos temporários
+tmp/
+temp/
+
+# Configuração do PM2
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Outros
+*.tgz
+*.gz
+*.zip
+*.rar

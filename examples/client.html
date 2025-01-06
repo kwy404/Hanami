@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSocket Chat</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 flex items-center justify-center h-screen">
+    <div class="bg-white w-full max-w-md rounded shadow-lg p-4">
+        <h1 class="text-xl font-bold mb-4">WebSocket Chat</h1>
+        <div class="mb-4">
+            <input id="usernameInput" type="text" placeholder="Enter your username" class="w-full p-2 border rounded mb-2">
+            <input id="messageInput" type="text" placeholder="Enter message" class="w-full p-2 border rounded">
+        </div>
+        <div class="flex space-x-2 mb-4">
+            <button onclick="sendMessage('/echo')" class="bg-blue-500 text-white px-4 py-2 rounded">Send to /echo</button>
+            <button onclick="sendMessage('/broadcast')" class="bg-green-500 text-white px-4 py-2 rounded">Send to /broadcast</button>
+            <button onclick="sendPrivateMessage()" class="bg-yellow-500 text-white px-4 py-2 rounded">Send Private Message</button>
+        </div>
+        <ul id="messages" class="bg-gray-200 p-2 rounded h-64 overflow-y-scroll"></ul>
+    </div>
+
+    <script>
+        // Cria uma nova conexão WebSocket
+        const ws = new WebSocket('ws://localhost:8080');
+
+        // Evento quando a conexão é aberta
+        ws.onopen = () => {
+            console.log('Connected to server');
+        };
+
+        // Evento quando uma mensagem é recebida do servidor
+        ws.onmessage = (event) => {
+            const messages = document.getElementById('messages');
+            const messageElement = document.createElement('li');
+            const { route, data } = JSON.parse(event.data);
+            messageElement.textContent = `Route: ${route}, Data: ${JSON.stringify(data)}`;
+            messageElement.className = "p-2 border-b";
+            messages.appendChild(messageElement);
+        };
+
+        // Evento quando a conexão é fechada
+        ws.onclose = () => {
+            console.log('Disconnected from server');
+        };
+
+        // Função para enviar uma mensagem para uma rota específica
+        function sendMessage(route) {
+            const usernameInput = document.getElementById('usernameInput');
+            const messageInput = document.getElementById('messageInput');
+            const message = {
+                username: usernameInput.value,
+                text: messageInput.value
+            };
+            ws.send(JSON.stringify({ route, data: message }));
+            messageInput.value = '';
+        }
+
+        // Função para enviar uma mensagem privada
+        function sendPrivateMessage() {
+            const targetUsername = prompt("Enter the target user's username:");
+            const messageInput = document.getElementById('messageInput');
+            const message = messageInput.value;
+            ws.send(JSON.stringify({ route: '/private', data: { targetUsername, message } }));
+            messageInput.value = '';
+        }
+    </script>
+</body>
+</html>
